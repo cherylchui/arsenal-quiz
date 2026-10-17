@@ -3,253 +3,309 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>阿仙奴近15年球迷大考驗 🔴⚪</title>
+  <title>阿仙奴近15年球迷大考驗 🔴⚪ | Arsenal Ultimate Fan Quiz</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gunnersRed: '#DB0007',
+            gunnersRedDark: '#9E0005',
+            emiratesNavy: '#06141F',
+            emiratesDarkBlue: '#020B12',
+            gunnersGold: '#FFD700',
+            gunnersGoldMuted: '#9C824A',
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+          },
+          keyframes: {
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '20%, 60%': { transform: 'translateX(-8px)' },
+              '40%, 80%': { transform: 'translateX(8px)' },
+            },
+            pop: {
+              '0%': { transform: 'scale(0.95)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            },
+            glow: {
+              '0%, 100%': { opacity: '0.4' },
+              '50%': { opacity: '0.8' }
+            }
+          },
+          animation: {
+            shake: 'shake 0.4s ease-in-out',
+            pop: 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            glow: 'glow 2s infinite ease-in-out',
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    :root {
-      --primary-color: #DB0007;
-      --secondary-color: #06141F;
-      --gold-color: #9C824A;
-      --bg-color: #f4f4f9;
-      --card-bg: #ffffff;
-      --text-color: #333333;
-    }
-
+    /* Background Mesh Gradient */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 15px;
+      background-color: #020B12;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(219, 0, 7, 0.35) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 20, 31, 0.9) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(156, 130, 74, 0.15) 0px, transparent 50%);
+      background-attachment: fixed;
     }
 
-    .game-container {
-      width: 100%;
-      max-width: 600px;
+    /* Glassmorphism Styles */
+    .glass-card {
+      background: rgba(6, 20, 31, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .card {
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      border-top: 6px solid var(--primary-color);
+    .glass-option {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .hide {
-      display: none !important;
+    .glass-option:hover:not(:disabled) {
+      background: rgba(219, 0, 7, 0.25);
+      border-color: rgba(219, 0, 7, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(219, 0, 7, 0.3);
     }
 
-    h1 {
-      color: var(--primary-color);
-      font-size: 1.8rem;
-      margin-bottom: 15px;
+    .glass-option.correct {
+      background: rgba(34, 197, 94, 0.25) !important;
+      border-color: #22c55e !important;
+      color: #86efac !important;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
     }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: var(--secondary-color);
+    .glass-option.wrong {
+      background: rgba(239, 68, 68, 0.25) !important;
+      border-color: #ef4444 !important;
+      color: #fca5a5 !important;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
     }
 
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: #eee;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      overflow: hidden;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
     }
-
-    .progress {
-      height: 100%;
-      background-color: var(--primary-color);
-      width: 0%;
-      transition: width 0.3s ease;
+    ::-webkit-scrollbar-track {
+      background: rgba(6, 20, 31, 0.8);
     }
-
-    .options-grid {
-      display: grid;
-      gap: 12px;
-      margin: 20px 0;
-    }
-
-    .option-btn {
-      background-color: #f8f9fa;
-      border: 2px solid #e9ecef;
-      padding: 14px 20px;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
-    }
-
-    .option-btn:hover:not([disabled]) {
-      background-color: #e9ecef;
-      border-color: var(--secondary-color);
-    }
-
-    .option-btn.correct {
-      background-color: #d4edda;
-      border-color: #28a745;
-      color: #155724;
-      font-weight: bold;
-    }
-
-    .option-btn.wrong {
-      background-color: #f8d7da;
-      border-color: #dc3545;
-      color: #721c24;
-    }
-
-    .btn {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 12px 30px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background 0.2s;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .btn:hover {
-      background-color: #b50006;
-    }
-
-    .explanation {
-      background-color: #e8f4f8;
-      border-left: 4px solid var(--secondary-color);
-      padding: 12px;
-      margin-bottom: 15px;
-      text-align: left;
-      border-radius: 4px;
-      font-size: 0.95rem;
-    }
-
-    .score-box {
-      font-size: 3rem;
-      font-weight: bold;
-      color: var(--primary-color);
-      margin: 15px 0;
+    ::-webkit-scrollbar-thumb {
+      background: #DB0007;
+      border-radius: 3px;
     }
   </style>
 </head>
-<body>
-  <div class="game-container">
-    <div id="start-screen" class="card">
-      <h1>🔴⚪ 阿仙奴近15年球迷大考驗</h1>
-      <p>身為兵工廠死忠，你對阿仙奴過去 15 年（2011-2026）嘅大事有幾了解？</p>
-      <p>答對越多，級數越高！總共有 10 條選擇題。</p>
-      <button id="start-btn" class="btn">立即開始挑戰</button>
+
+<body class="min-h-screen text-slate-100 flex items-center justify-center p-4 md:p-6 font-sans antialiased selection:bg-gunnersRed selection:text-white">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-2xl relative z-10">
+
+    <!-- Decorative Glow background -->
+    <div class="absolute -top-12 -left-12 w-60 h-60 bg-gunnersRed/30 rounded-full blur-3xl animate-glow pointer-events-none"></div>
+    <div class="absolute -bottom-12 -right-12 w-60 h-60 bg-gunnersGold/20 rounded-full blur-3xl animate-glow pointer-events-none"></div>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl text-center relative overflow-hidden border-t-4 border-t-gunnersRed animate-pop">
+      <!-- Cannon Icon Header -->
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-gunnersRed to-gunnersRedDark text-gunnersGold text-3xl shadow-lg shadow-gunnersRed/40 mb-6 border border-gunnersGold/30">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white">
+        阿仙奴近15年球迷大考驗 <span class="text-gunnersRed">🔴⚪</span>
+      </h1>
+      
+      <p class="text-slate-300 text-base md:text-lg mb-6 leading-relaxed">
+        身為兵工廠死忠，你對阿仙奴過去 15 年（2011 - 2026）嘅大事有幾了解？
+      </p>
+
+      <div class="bg-black/40 rounded-2xl p-4 mb-8 border border-white/5 text-sm text-slate-300 text-left space-y-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-tv text-gunnersGold"></i>
+          <span>採用 <b>Now Sports / Now TV</b> 廣東話官方常用譯名</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-gunnersGold"></i>
+          <span>全場共 <b>10 條多項選擇題</b>（精選重大歷史時刻）</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-trophy text-gunnersGold"></i>
+          <span>完成後可解鎖槍迷稱號與等級認證！</span>
+        </div>
+      </div>
+
+      <button id="start-btn" onclick="startGame()" class="w-full py-4 px-8 bg-gradient-to-r from-gunnersRed to-red-700 hover:from-red-600 hover:to-gunnersRed text-white text-lg font-bold rounded-2xl shadow-xl shadow-gunnersRed/30 hover:shadow-gunnersRed/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 group">
+        <span>立即開始挑戰</span>
+        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+      </button>
     </div>
 
-    <div id="quiz-screen" class="card hide">
-      <div class="header">
-        <span id="question-number">問題 1/10</span>
-        <span id="score-count">得分: 0</span>
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl border-t-4 border-t-gunnersRed hidden">
+      <!-- Top Meta Info -->
+      <div class="flex items-center justify-between mb-4 text-sm font-semibold text-slate-300">
+        <span id="question-number" class="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 text-gunnersGold flex items-center gap-2">
+          <i class="fa-regular fa-circle-question"></i>
+          <span>問題 1/10</span>
+        </span>
+        <span id="score-count" class="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-white/10 text-green-400 flex items-center gap-2">
+          <i class="fa-solid fa-star"></i>
+          <span>得分: 0</span>
+        </span>
       </div>
-      <div class="progress-bar">
-        <div id="progress" class="progress"></div>
+
+      <!-- Animated Progress Bar -->
+      <div class="w-full bg-slate-800/80 rounded-full h-3 mb-6 p-0.5 border border-white/5 overflow-hidden">
+        <div id="progress" class="bg-gradient-to-r from-gunnersRed to-gunnersGold h-full rounded-full transition-all duration-500 shadow-md shadow-gunnersRed/50" style="width: 10%;"></div>
       </div>
-      <h2 id="question-text">題目載入中...</h2>
-      <div id="options-container" class="options-grid"></div>
-      <div id="explanation" class="explanation hide"></div>
-      <button id="next-btn" class="btn hide">下一條</button>
+
+      <!-- Question Box -->
+      <div class="mb-6">
+        <h2 id="question-text" class="text-xl md:text-2xl font-bold text-white leading-snug">
+          題目載入中...
+        </h2>
+      </div>
+
+      <!-- Options Grid -->
+      <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
+        <!-- Dynamic Option Buttons inserted via JS -->
+      </div>
+
+      <!-- Explanation Box -->
+      <div id="explanation" class="hidden mb-6 p-4 rounded-2xl bg-slate-900/90 border border-slate-700/60 text-slate-200 text-sm md:text-base leading-relaxed animate-pop">
+        <div class="font-bold text-gunnersGold mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Now TV 賽事解說：</span>
+        </div>
+        <p id="explanation-text"></p>
+      </div>
+
+      <!-- Next Button -->
+      <button id="next-btn" onclick="showNextQuestion()" class="hidden w-full py-3.5 px-6 bg-gradient-to-r from-gunnersRed to-red-700 hover:from-red-600 hover:to-gunnersRed text-white text-base font-bold rounded-2xl shadow-lg shadow-gunnersRed/30 transition-all duration-200 flex items-center justify-center gap-2">
+        <span>下一條問題</span>
+        <i class="fa-solid fa-chevron-right text-xs"></i>
+      </button>
     </div>
 
-    <div id="result-screen" class="card hide">
-      <h2>挑戰完成！</h2>
-      <div class="score-box">
-        <span id="final-score">0</span> / 10
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl text-center border-t-4 border-t-gunnersGold hidden animate-pop">
+      <div class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-gunnersGold to-yellow-600 text-emiratesNavy text-4xl shadow-xl shadow-gunnersGold/20 mb-6 border-2 border-white/20">
+        <i id="rank-icon" class="fa-solid fa-trophy"></i>
       </div>
-      <h3 id="rank-title">阿仙奴等級</h3>
-      <p id="rank-desc"></p>
-      <button id="restart-btn" class="btn">再試一次</button>
+
+      <h2 class="text-2xl font-extrabold text-slate-200 mb-2">挑戰完成！</h2>
+      <p class="text-slate-400 text-sm mb-4">你在 10 條賽事大考驗中答對了：</p>
+
+      <!-- Final Score Circle -->
+      <div class="inline-flex items-baseline justify-center gap-1 my-2 py-3 px-8 rounded-2xl bg-black/40 border border-white/10">
+        <span id="final-score" class="text-5xl font-black text-gunnersRed">0</span>
+        <span class="text-2xl font-bold text-slate-400">/ 10</span>
+      </div>
+
+      <div class="my-6">
+        <h3 id="rank-title" class="text-2xl md:text-3xl font-black text-gunnersGold mb-2">
+          酋長球場傳奇
+        </h3>
+        <p id="rank-desc" class="text-slate-300 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+          描述載入中...
+        </p>
+      </div>
+
+      <button id="restart-btn" onclick="startGame()" class="w-full py-4 px-8 bg-gradient-to-r from-gunnersRed to-red-700 hover:from-red-600 hover:to-gunnersRed text-white text-lg font-bold rounded-2xl shadow-xl shadow-gunnersRed/30 hover:shadow-gunnersRed/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+        <i class="fa-solid fa-rotate-right"></i>
+        <span>再次挑戰</span>
+      </button>
     </div>
+
   </div>
 
+  <!-- GAME LOGIC -->
   <script>
+    // 10 條 2011-2026 阿仙奴經典事件選擇題 (採用 Now Sports / Now TV 常用名稱)
     const questions = [
       {
-        question: "2011/12 賽季，阿仙奴隊長雲佩斯（Robin van Persie）單季射入多少個英超入球奪得金靴？",
+        question: "2011/12 賽季，阿仙奴隊長雲佩斯（Robin van Persie）單季狀態大勇，最終在英超射入多少個入球奪得金靴獎？",
         options: ["28 個", "30 個", "32 個", "34 個"],
         answer: 1,
-        explanation: "雲佩斯在 2011/12 賽季狀態大勇，在英超射入 30 球奪得金靴獎。"
+        explanation: "雲佩斯喺 2011/12 賽季踢足 38 場英超聯賽並轟入 30 球，榮獲該季英超最佳射手（金靴獎），帶領兵工廠鎖定歐聯席位。"
       },
       {
-        question: "2014 年 FA Cup 決賽，阿仙奴在落後 0:2 的情況下大逆轉，憑哪位球員在加時射入致勝球 3:2 擊敗侯城打破 9 年無冠魔咒？",
-        options: ["基奧特 (Olivier Giroud)", "艾林斯 (Aaron Ramsey)", "卡索拉 (Santi Cazorla)", "韋舒亞 (Jack Wilshere)"],
+        question: "2014 年足總盃決賽，阿仙奴開局落後 0:2 大逆轉，憑哪位球員喺加時射入致勝球 3:2 擊敗侯城，打破長達 9 年嘅無冠魔咒？",
+        options: ["基奧特 (Olivier Giroud)", "藍斯 (Aaron Ramsey)", "卡索拉 (Santi Cazorla)", "韋舒亞 (Jack Wilshere)"],
         answer: 1,
-        explanation: "艾林斯（Ramsey）在加時下半場接應基奧特腳踏傳送射入致勝球！"
+        explanation: "藍斯喺加時下半場接應基奧特後踭精彩傳送，第一時間右腳一扣射入致勝 3:2，為阿仙奴捧走 2014 年 FA Cup！"
       },
       {
-        question: "2017 年 1 月對陣水晶宮，基奧特（Olivier Giroud）射入並贏得國際足協普斯卡斯獎（最佳入球）的精彩進球是？",
+        question: "2017 年 1 月主場對水晶宮，前鋒基奧特（Olivier Giroud）射入並勇奪國際足協普斯卡斯獎（年度最佳入球）嘅神技係？",
         options: ["蠍子腳（Scorpion Kick）", "30 碼世界波", "倒掛金鉤", "連過五人"],
         answer: 0,
-        explanation: "基奧特接應桑捷斯（Alexis Sánchez）傳中，以極高難度的「蠍子腳」反腳後跟扣入。"
+        explanation: "基奧特接應阿歷斯山齊士（Alexis Sánchez）左路傳中，在身後位置施展難度極高嘅「蠍子腳」反腳後跟扣彈槓入網！"
       },
       {
-        question: "雲格（Arsène Wenger）於哪一年正式卸任阿仙奴領隊，結束長達 22 年的執教生涯？",
+        question: "功勳領隊雲格（Arsène Wenger）於哪一年季尾正式卸任，結束長達 22 年嘅阿仙奴執教生涯？",
         options: ["2016 年", "2017 年", "2018 年", "2019 年"],
         answer: 2,
-        explanation: "雲格於 2017/18 賽季結束後（2018 年 5 月）正式告別阿仙奴。"
+        explanation: "「教授」雲格於 2017/18 賽季結束後（2018 年 5 月）告別酋長球場，結束自 1996 年起長達 22 年嘅傳奇執教生涯。"
       },
       {
-        question: "2019 年阿仙奴以破當時球會紀錄的 7,200 萬鎊簽入哪位科特迪瓦翼鋒？",
-        options: ["佩佩 (Nicolas Pépé)", "奧巴美揚 (Pierre-Emerick Aubameyang)", "拉卡澤特 (Alexandre Lacazette)", "馬天尼利 (Gabriel Martinelli)"],
+        question: "2019 年夏天，阿仙奴以破當時球會轉會費紀錄（7,200 萬鎊）簽入哪位科特迪瓦翼鋒？",
+        options: ["尼高拉斯比比 (Nicolas Pépé)", "奧巴美揚 (Pierre-Emerick Aubameyang)", "拿卡錫迪 (Alexandre Lacazette)", "馬天尼利 (Gabriel Martinelli)"],
         answer: 0,
-        explanation: "阿仙奴在 2019 年夏天由里爾簽入佩佩（Pépé）。"
+        explanation: "阿仙奴喺 2019 年夏天由法甲里爾重金簽入尼高拉斯比比（Nicolas Pépé），打破當時球會最高轉會費紀錄。"
       },
       {
-        question: "阿迪達（Mikel Arteta）於 2019 年底接任領隊後，在 2019/20 賽季帶領球隊擊敗哪隊奪得足總盃冠軍？",
-        options: ["曼城", "切爾西", "曼聯", "利物浦"],
+        question: "阿迪達（Mikel Arteta）於 2019 年底接任領隊後，喺 2019/20 賽季帶領球隊於溫布萊決賽擊敗哪隊奪得足總盃冠軍？",
+        options: ["曼城", "車路士", "曼聯", "利物浦"],
         answer: 1,
-        explanation: "阿仙奴在 Wembley 決賽憑奧巴美揚梅開二度，以 2:1 擊敗切爾西奪冠。"
+        explanation: "阿仙奴喺 Wembley 決賽憑奧巴美揚梅開二度，以 2:1 逆轉擊敗車路士，奪得球會第 14 座 FA Cup 冠軍。"
       },
       {
-        question: "阿仙奴現任隊長厄迪高（Martin Ødegaard）最初是從哪間球會租借加盟阿仙奴？",
-        options: ["皇家馬德里", "多特蒙德", "皇家蘇斯達", "阿積士"],
+        question: "阿仙奴隊長奧迪哥特（Martin Ødegaard）最初喺 2021 年 1 月係從哪間豪門球會租借加盟？",
+        options: ["皇家馬德里", "多蒙特", "皇家蘇斯達", "阿積士"],
         answer: 0,
-        explanation: "厄迪高在 2021 年 1 月由皇家馬德里租借加盟，隨後在夏天正式買斷。"
+        explanation: "奧迪哥特最初由皇家馬德里外借至阿仙奴，因表現出色，球會於 2021 年夏天以約 3,500 萬歐元正式買斷並任命為隊長。"
       },
       {
-        question: "2023/24 賽季，阿仙奴打破球會史上最高轉會費紀錄（1.05 億鎊）簽入哪位英格蘭中場？",
-        options: ["高爾華加 (Cole Palmer)", "賴斯 (Declan Rice)", "咸文 (Kalvin Phillips)", "比林咸 (Jude Bellingham)"],
+        question: "2023/24 賽季，阿仙奴打破隊史轉會費紀錄（1.05 億鎊）簽入哪位英格蘭中場核心？",
+        options: ["高爾彭馬 (Cole Palmer)", "迪肯賴斯 (Declan Rice)", "加榮菲臘斯 (Kalvin Phillips)", "比寧咸 (Jude Bellingham)"],
         answer: 1,
-        explanation: "賴斯（Declan Rice）由韋斯咸加盟，成為阿仙奴中場絕對核心。"
+        explanation: "迪肯賴斯（Declan Rice）由韋斯咸轉會加盟，成為兵工廠中場樞紐，展現頂級統治力。"
       },
       {
-        question: "阿仙奴門將拉亞（David Raya）在 2023/24 賽季以多少場保持不失球（Clean Sheet）贏得英超金手套獎？",
+        question: "門將大衛拿耶（David Raya）喺 2023/24 賽季英超憑多少場保持不失球（Clean Sheet）榮獲英超金手套獎？",
         options: ["12 場", "16 場", "18 場", "20 場"],
         answer: 1,
-        explanation: "拉亞在該季錄得 16 場 Clean Sheet，順利奪得英超金手套獎。"
+        explanation: "大衛拿耶喺該季錄得 16 場 Clean Sheet，順利擊敗各路強敵奪得 2023/24 賽季英超金手套獎。"
       },
       {
-        question: "2022/23 賽季英超主場對陣般尼茅夫，阿仙奴在落後 0:2 情況下完成 3:2 絕殺大逆轉，在 97 分鐘射入補時絕殺球的球員是？",
-        options: ["薩卡 (Bukayo Saka)", "希列斯 (Reiss Nelson)", "特沙特 (Leandro Trossard)", "恩基迪亞 (Eddie Nketiah)"],
+        question: "2022/23 賽季英超主場對般尼茅夫，阿仙奴落後 0:2 下大逆轉，喺 97 分鐘射入補時絕殺波 3:2 完成狂喜大逆轉嘅球員係？",
+        options: ["布卡約薩卡 (Bukayo Saka)", "雷斯尼爾遜 (Reiss Nelson)", "杜沙特 (Leandro Trossard)", "尼基迪亞 (Eddie Nketiah)"],
         answer: 1,
-        explanation: "尼爾遜（Reiss Nelson / NOW 譯希列斯）在 96 分鐘 57 秒左腳射入世界波世界級絕殺！"
+        explanation: "雷斯尼爾遜（Reiss Nelson）喺 96 分鐘 57 秒禁區外左腳轟入世界波，完成英超近年最震撼嘅 3:2 補時絕殺！"
       }
     ];
 
     let currentQuestion = 0;
     let score = 0;
 
-    const startBtn = document.getElementById('start-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const restartBtn = document.getElementById('restart-btn');
-
+    // Elements
     const startScreen = document.getElementById('start-screen');
     const quizScreen = document.getElementById('quiz-screen');
     const resultScreen = document.getElementById('result-screen');
@@ -257,66 +313,92 @@
     const questionText = document.getElementById('question-text');
     const optionsContainer = document.getElementById('options-container');
     const explanationDiv = document.getElementById('explanation');
+    const explanationText = document.getElementById('explanation-text');
     const questionNumber = document.getElementById('question-number');
     const scoreCount = document.getElementById('score-count');
     const progressBar = document.getElementById('progress');
-
-    startBtn.addEventListener('click', startGame);
-    nextBtn.addEventListener('click', showNextQuestion);
-    restartBtn.addEventListener('click', startGame);
+    const nextBtn = document.getElementById('next-btn');
 
     function startGame() {
       currentQuestion = 0;
       score = 0;
-      startScreen.classList.add('hide');
-      resultScreen.classList.add('hide');
-      quizScreen.classList.remove('hide');
+      startScreen.classList.add('hidden');
+      resultScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
       loadQuestion();
     }
 
     function loadQuestion() {
       resetState();
       const q = questions[currentQuestion];
-      questionText.innerText = q.question;
-      questionNumber.innerText = `問題 ${currentQuestion + 1}/${questions.length}`;
-      scoreCount.innerText = `得分: ${score}`;
-      progressBar.style.width = `${((currentQuestion) / questions.length) * 100}%`;
 
-      q.options.forEach((opt, index) => {
+      // Update Top Status
+      questionText.innerText = q.question;
+      questionNumber.querySelector('span').innerText = `問題 ${currentQuestion + 1}/${questions.length}`;
+      scoreCount.querySelector('span').innerText = `得分: ${score}`;
+      
+      // Update Progress Bar
+      const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Render Options
+      q.options.forEach((option, index) => {
         const button = document.createElement('button');
-        button.innerText = opt;
-        button.classList.add('option-btn');
-        button.addEventListener('click', () => selectOption(index));
+        button.className = 'glass-option w-full p-4 rounded-2xl text-left font-semibold text-slate-100 flex items-center justify-between group animate-pop';
+        button.style.animationDelay = `${index * 0.08}s`;
+        
+        button.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-gunnersGold group-hover:bg-gunnersRed group-hover:text-white transition-colors">
+              ${String.fromCharCode(65 + index)}
+            </span>
+            <span>${option}</span>
+          </div>
+          <i class="fa-regular fa-circle text-slate-500 group-hover:text-white transition-colors"></i>
+        `;
+        
+        button.addEventListener('click', () => selectOption(index, button));
         optionsContainer.appendChild(button);
       });
     }
 
     function resetState() {
-      nextBtn.classList.add('hide');
-      explanationDiv.classList.add('hide');
+      nextBtn.classList.add('hidden');
+      explanationDiv.classList.add('hidden');
       optionsContainer.innerHTML = '';
     }
 
-    function selectOption(index) {
+    function selectOption(selectedIndex, selectedBtn) {
       const q = questions[currentQuestion];
-      const buttons = optionsContainer.children;
+      const allButtons = optionsContainer.children;
 
-      for (let btn of buttons) {
+      // Disable all option buttons
+      for (let btn of allButtons) {
         btn.disabled = true;
+        btn.style.cursor = 'default';
       }
 
-      if (index === q.answer) {
+      if (selectedIndex === q.answer) {
         score++;
-        buttons[index].classList.add('correct');
+        selectedBtn.classList.add('correct');
+        selectedBtn.querySelector('i').className = 'fa-solid fa-circle-check text-green-400';
       } else {
-        buttons[index].classList.add('wrong');
-        buttons[q.answer].classList.add('correct');
+        selectedBtn.classList.add('wrong');
+        selectedBtn.classList.add('animate-shake');
+        selectedBtn.querySelector('i').className = 'fa-solid fa-circle-xmark text-red-400';
+
+        // Highlight Correct Answer
+        allButtons[q.answer].classList.add('correct');
+        allButtons[q.answer].querySelector('i').className = 'fa-solid fa-circle-check text-green-400';
       }
 
-      scoreCount.innerText = `得分: ${score}`;
-      explanationDiv.innerText = q.explanation;
-      explanationDiv.classList.remove('hide');
-      nextBtn.classList.remove('hide');
+      // Update Score Display
+      scoreCount.querySelector('span').innerText = `得分: ${score}`;
+
+      // Show Explanation and Next Button
+      explanationText.innerText = q.explanation;
+      explanationDiv.classList.remove('hidden');
+      nextBtn.classList.remove('hidden');
     }
 
     function showNextQuestion() {
@@ -329,25 +411,44 @@
     }
 
     function showResults() {
-      quizScreen.classList.add('hide');
-      resultScreen.classList.remove('hide');
+      quizScreen.classList.add('hidden');
+      resultScreen.classList.remove('hidden');
 
       document.getElementById('final-score').innerText = score;
       const rankTitle = document.getElementById('rank-title');
       const rankDesc = document.getElementById('rank-desc');
+      const rankIcon = document.getElementById('rank-icon');
 
       if (score === 10) {
         rankTitle.innerText = "🏆 酋長球場傳奇 (Legend)";
-        rankDesc.innerText = "太厲害了！你對阿仙奴嘅了解堪比雲格同阿迪達！COYG！🔴⚪";
+        rankDesc.innerText = "完美！你對阿仙奴近 15 年嘅歷史瞭如指掌！你嘅槍迷血統比雲格同阿迪達更加純正！COYG！🔴⚪";
+        rankIcon.className = "fa-solid fa-trophy";
+        triggerConfetti();
       } else if (score >= 7) {
-        rankTitle.innerText = "⭐ 核心主力球員 (First Team Regular)";
-        rankDesc.innerText = "好強嘅阿仙奴球迷！近15年嘅大事你基本上瞭如指掌！";
+        rankTitle.innerText = "⭐ 核心主力球員 (First Team)";
+        rankDesc.innerText = "非常出色！你絕對係阿仙奴死忠，近 15 年嘅大事大部分都難唔倒你！";
+        rankIcon.className = "fa-solid fa-medal";
+        triggerConfetti();
       } else if (score >= 4) {
         rankTitle.innerText = "🧢 輪換副將 (Squad Player)";
-        rankDesc.innerText = "表現不錯，不過有啲經典時刻可能忘記咗，再溫習下！";
+        rankDesc.innerText = "合格！表現唔錯，不過有啲經典細節可能記錯咗，得閒溫習多啲精華！";
+        rankIcon.className = "fa-solid fa-shield";
       } else {
-        rankTitle.innerText = "👶 青年軍 (Academy Player)";
-        rankDesc.innerText = "睇嚟你需要多睇啲阿仙奴精華片段，加油！";
+        rankTitle.innerText = "👶 海布里青年軍 (Academy Player)";
+        rankDesc.innerText = "要努力喇！睇嚟你離「北倫敦死忠」仲有一段距離，即刻去睇多啲賽事精華重溫！";
+        rankIcon.className = "fa-solid fa-seedling";
+      }
+    }
+
+    // Launch Confetti Effect
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#DB0007', '#FFD700', '#ffffff', '#06141F']
+        });
       }
     }
   </script>
