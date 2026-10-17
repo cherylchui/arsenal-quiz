@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>阿仙奴近15年球迷大考驗 🔴⚪</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <div id="start-screen" class="card">
+      <h1>🔴⚪ 阿仙奴近15年球迷大考驗</h1>
+      <p>身為兵工廠死忠，你對阿仙奴過去 15 年（2011-2026）嘅大事有幾了解？</p>
+      <p>答對越多，級數越高！總共有 10 條選擇題。</p>
+      <button id="start-btn" class="btn">立即開始挑戰</button>
+    </div>
+
+    <div id="quiz-screen" class="card hide">
+      <div class="header">
+        <span id="question-number">問題 1/10</span>
+        <span id="score-count">得分: 0</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progress" class="progress"></div>
+      </div>
+      <h2 id="question-text">題目載入中...</h2>
+      <div id="options-container" class="options-grid"></div>
+      <div id="explanation" class="explanation hide"></div>
+      <button id="next-btn" class="btn hide">下一條</button>
+    </div>
+
+    <div id="result-screen" class="card hide">
+      <h2>挑戰完成！</h2>
+      <div class="score-box">
+        <span id="final-score">0</span> / 10
+      </div>
+      <h3 id="rank-title">阿仙奴等級</h3>
+      <p id="rank-desc"></p>
+      <button id="restart-btn" class="btn">再試一次</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+:root {
+  --primary-color: #DB0007; /* 阿仙奴紅 */
+  --secondary-color: #06141F; /* 酋長球場深藍 */
+  --gold-color: #9C824A;
+  --bg-color: #f4f4f9;
+  --card-bg: #ffffff;
+  --text-color: #333333;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 15px;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.card {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-top: 6px solid var(--primary-color);
+}
+
+.hide {
+  display: none !important;
+}
+
+h1 {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--secondary-color);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #eee;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: var(--primary-color);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.options-grid {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.option-btn {
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.option-btn:hover:not([disabled]) {
+  background-color: #e9ecef;
+  border-color: var(--secondary-color);
+}
+
+.option-btn.correct {
+  background-color: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+  font-weight: bold;
+}
+
+.option-btn.wrong {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn:hover {
+  background-color: #b50006;
+}
+
+.explanation {
+  background-color: #e8f4f8;
+  border-left: 4px solid var(--secondary-color);
+  padding: 12px;
+  margin-bottom: 15px;
+  text-align: left;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.score-box {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 15px 0;
+}
+// 10 條近 15 年（2011-2026）阿仙奴 MC 題目（NOW TV 譯名）
+const questions = [
+  {
+    question: "2011/12 賽季，阿仙奴隊長雲佩斯（Robin van Persie）單季射入多少個英超入球奪得金靴？",
+    options: ["28 個", "30 個", "32 個", "34 個"],
+    answer: 1,
+    explanation: "雲佩斯在 2011/12 賽季狀態大勇，在英超射入 30 球奪得金靴獎。"
+  },
+  {
+    question: "2014 年 FA Cup 決賽，阿仙奴在落後 0:2 的情況下大逆轉，憑哪位球員在加時射入致勝球 3:2 擊敗侯城打破 9 年無冠魔咒？",
+    options: ["基奧特 (Olivier Giroud)", "艾林斯 (Aaron Ramsey)", "卡索拉 (Santi Cazorla)", "韋舒亞 (Jack Wilshere)"],
+    answer: 1,
+    explanation: "艾林斯（Ramsey）在加時下半場接應基奧特腳踏傳送射入致勝球！"
+  },
+  {
+    question: "2017 年 1 月對陣水晶宮，基奧特（Olivier Giroud）射入並贏得國際足協普斯卡斯獎（最佳入球）的精彩進球是？",
+    options: ["蠍子腳（Scorpion Kick）", "30 碼世界波", "倒掛金鉤", "連過五人"],
+    answer: 0,
+    explanation: "基奧特接應桑捷斯（Alexis Sánchez）傳中，以極高難度的「蠍子腳」反腳後跟扣入。"
+  },
+  {
+    question: "雲格（Arsène Wenger）於哪一年正式卸任阿仙奴領隊，結束長達 22 年的執教生涯？",
+    options: ["2016 年", "2017 年", "2018 年", "2019 年"],
+    answer: 2,
+    explanation: "雲格於 2017/18 賽季結束後（2018 年 5 月）正式告別阿仙奴。"
+  },
+  {
+    question: "2019 年阿仙奴以破當時球會紀錄的 7,200 萬鎊簽入哪位科特迪瓦翼鋒？",
+    options: ["佩佩 (Nicolas Pépé)", "奧巴美揚 (Pierre-Emerick Aubameyang)", "拉卡澤特 (Alexandre Lacazette)", "馬天尼利 (Gabriel Martinelli)"],
+    answer: 0,
+    explanation: "阿仙奴在 2019 年夏天由里爾簽入佩佩（Pépé）。"
+  },
+  {
+    question: "阿迪達（Mikel Arteta）於 2019 年底接任領隊後，在 2019/20 賽季帶領球隊擊敗哪隊奪得足總盃冠軍？",
+    options: ["曼城", "切爾西", "曼聯", "利物浦"],
+    answer: 1,
+    explanation: "阿仙奴在 Wembley 決賽憑奧巴美揚梅開二度，以 2:1 擊敗切爾西奪冠。"
+  },
+  {
+    question: "阿仙奴現任隊長厄迪高（Martin Ødegaard）最初是從哪間球會租借加盟阿仙奴？",
+    options: ["皇家馬德里", "多特蒙德", "皇家蘇斯達", "阿積士"],
+    answer: 0,
+    explanation: "厄迪高在 2021 年 1 月由皇家馬德里租借加盟，隨後在夏天正式買斷。"
+  },
+  {
+    question: "2023/24 賽季，阿仙奴打破球會史上最高轉會費紀錄（1.05 億鎊）簽入哪位英格蘭中場？",
+    options: ["高爾華加 (Cole Palmer)", "賴斯 (Declan Rice)", "咸文 (Kalvin Phillips)", "比林咸 (Jude Bellingham)"],
+    answer: 1,
+    explanation: "賴斯（Declan Rice）由韋斯咸加盟，成為阿仙奴中場絕對核心。"
+  },
+  {
+    question: "阿仙奴門將拉亞（David Raya）在 2023/24 賽季以多少場保持不失球（Clean Sheet）贏得英超金手套獎？",
+    options: ["12 場", "16 場", "18 場", "20 場"],
+    answer: 1,
+    explanation: "拉亞在該季錄得 16 場 Clean Sheet，順利奪得英超金手套獎。"
+  },
+  {
+    question: "2022/23 賽季英超主場對陣般尼茅夫，阿仙奴在落後 0:2 情況下完成 3:2 絕殺大逆轉，在 97 分鐘射入補時絕殺球的球員是？",
+    options: ["薩卡 (Bukayo Saka)", "希列斯 (Reiss Nelson)", "特沙特 (Leandro Trossard)", "恩基迪亞 (Eddie Nketiah)"],
+    answer: 1,
+    explanation: "尼爾遜（Reiss Nelson / NOW 譯希列斯）在 96 分鐘 57 秒左腳射入世界波世界級絕殺！"
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const startBtn = document.getElementById('start-btn');
+const nextBtn = document.getElementById('next-btn');
+const restartBtn = document.getElementById('restart-btn');
+
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const resultScreen = document.getElementById('result-screen');
+
+const questionText = document.getElementById('question-text');
+const optionsContainer = document.getElementById('options-container');
+const explanationDiv = document.getElementById('explanation');
+const questionNumber = document.getElementById('question-number');
+const scoreCount = document.getElementById('score-count');
+const progressBar = document.getElementById('progress');
+
+startBtn.addEventListener('click', startGame);
+nextBtn.addEventListener('click', showNextQuestion);
+restartBtn.addEventListener('click', startGame);
+
+function startGame() {
+  currentQuestion = 0;
+  score = 0;
+  startScreen.classList.add('hide');
+  resultScreen.classList.add('hide');
+  quizScreen.classList.remove('hide');
+  loadQuestion();
+}
+
+function loadQuestion() {
+  resetState();
+  const q = questions[currentQuestion];
+  questionText.innerText = q.question;
+  questionNumber.innerText = `問題 ${currentQuestion + 1}/${questions.length}`;
+  scoreCount.innerText = `得分: ${score}`;
+  progressBar.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+
+  q.options.forEach((opt, index) => {
+    const button = document.createElement('button');
+    button.innerText = opt;
+    button.classList.add('option-btn');
+    button.addEventListener('click', () => selectOption(index));
+    optionsContainer.appendChild(button);
+  });
+}
+
+function resetState() {
+  nextBtn.classList.add('hide');
+  explanationDiv.classList.add('hide');
+  optionsContainer.innerHTML = '';
+}
+
+function selectOption(index) {
+  const q = questions[currentQuestion];
+  const buttons = optionsContainer.children;
+
+  for (let btn of buttons) {
+    btn.disabled = true;
+  }
+
+  if (index === q.answer) {
+    score++;
+    buttons[index].classList.add('correct');
+  } else {
+    buttons[index].classList.add('wrong');
+    buttons[q.answer].classList.add('correct');
+  }
+
+  scoreCount.innerText = `得分: ${score}`;
+  explanationDiv.innerText = q.explanation;
+  explanationDiv.classList.remove('hide');
+  nextBtn.classList.remove('hide');
+}
+
+function showNextQuestion() {
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    loadQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  quizScreen.classList.add('hide');
+  resultScreen.classList.remove('hide');
+
+  document.getElementById('final-score').innerText = score;
+  const rankTitle = document.getElementById('rank-title');
+  const rankDesc = document.getElementById('rank-desc');
+
+  if (score === 10) {
+    rankTitle.innerText = "🏆 酋长球場傳奇 (Legend)";
+    rankDesc.innerText = "太厲害了！你對阿仙奴嘅了解堪比雲格同阿迪達！COYG！🔴⚪";
+  } else if (score >= 7) {
+    rankTitle.innerText = "⭐ 核心主力球員 (First Team Regular)";
+    rankDesc.innerText = "好強嘅阿仙奴球迷！近15年嘅大事你基本上瞭如指掌！";
+  } else if (score >= 4) {
+    rankTitle.innerText = "🧢 輪換副將 (Squad Player)";
+    rankDesc.innerText = "表現不錯，不過有啲經典時刻可能忘記咗，再溫習下！";
+  } else {
+    rankTitle.innerText = "👶 青年軍 (Academy Player)";
+    rankDesc.innerText = "睇嚟你需要多睇啲阿仙奴精華片段，加油！";
+  }
+}
